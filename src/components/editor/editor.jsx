@@ -2,14 +2,13 @@ import React, { useState } from 'react';
 import EditableWindow from '../editable_window/editable_window';
 import ReadableWindow from '../readable_window/readable_window';
 
-
 const CodeEditorLayout = () => {
-  const [apiResponse, setApiResponse] = useState(null);
+  const [codeData, setCodeData] = useState(null);
   const [dropDownOpt_1, setDropDownOpt_1] = useState('g++');
   const [dropDownOpt_2, setDropDownOpt_2] = useState('clang++');
 
-  const handleApiResponse = (data) => {
-    setApiResponse(data);
+  const handleCodeChange = (base64Code, functions) => {
+    setCodeData({ base64Code, functions });
   };
 
   const handleDropDownChange = (option, windowNumber) => {
@@ -22,9 +21,9 @@ const CodeEditorLayout = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 h-screen bg-dark-background text-white">
-      <EditableWindow onApiResponse={handleApiResponse} />
-      <ReadableWindow windowNumber={1} selectedOption={dropDownOpt_1} onDropDownChange={handleDropDownChange} apiResponse={apiResponse} />
-      <ReadableWindow windowNumber={2} selectedOption={dropDownOpt_2} onDropDownChange={handleDropDownChange} apiResponse={apiResponse} />
+      <EditableWindow onCodeChange={handleCodeChange} />
+      <ReadableWindow windowNumber={1} selectedOption={dropDownOpt_1} onDropDownChange={handleDropDownChange} codeData={codeData} />
+      <ReadableWindow windowNumber={2} selectedOption={dropDownOpt_2} onDropDownChange={handleDropDownChange} codeData={codeData} />
     </div>
   );
 };
