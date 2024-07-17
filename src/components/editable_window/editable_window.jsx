@@ -16,8 +16,9 @@ const EditableWindow = ({ onCodeChange }) => {
     setTypingTimeout(setTimeout(() => {
       const functions = extractFunctionNames(editor);
       const base64Code = btoa(editor);
-      onCodeChange(base64Code, functions);
-    }, 1250));
+      const key = editor;
+      onCodeChange(base64Code, functions, key);
+    }, 1000));
   };
 
   useEffect(() => {

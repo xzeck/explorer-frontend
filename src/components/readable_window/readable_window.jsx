@@ -2,11 +2,13 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { compileCode } from '../../service/compile_code_service';
+import CryptoJS from 'crypto-js';
 
 const ReadableWindow = ({ windowNumber, selectedOption, onDropDownChange, onArgumentsChange, codeData }) => {
   const [selectedCompilerData, setSelectedCompilerData] = useState('');
   const [typingTimeout, setTypingTimeout] = useState(null);
   const [args, setArgs] = useState([])
+  const [argsString, setArgsString] = useState("")
 
   const debouncedCompile = useCallback((codeData, selectedOption, args) => {
     if (typingTimeout) {
@@ -16,14 +18,18 @@ const ReadableWindow = ({ windowNumber, selectedOption, onDropDownChange, onArgu
     const newTimeout = setTimeout(async () => {
       if (codeData) {
         try {
-          const response = await compileCode(codeData.base64Code, codeData.functions, selectedOption, args);
+          const trimmedKey = codeData.key.replace(/\s+/g, '');
+          const dataToHash = trimmedKey + selectedOption + (args === undefined ? "" : args.join(""));
+
+          const sha256 = CryptoJS.SHA256(dataToHash).toString(CryptoJS.enc.Hex); 
+          const response = await compileCode(codeData.base64Code, codeData.functions, selectedOption, args, sha256);
           setSelectedCompilerData(response.output[selectedOption].join("\n"));
         } catch (error) {
           console.error('Error fetching compiler data:', error);
           setSelectedCompilerData('Error compiling code');
         }
       }
-    }, 1500);
+    }, 1250);
 
     setTypingTimeout(newTimeout);
   }, []);
@@ -39,6 +45,7 @@ const ReadableWindow = ({ windowNumber, selectedOption, onDropDownChange, onArgu
   }, [codeData, selectedOption, args, debouncedCompile]);
 
   const handleArgumentsChange = (e) => {
+    setArgsString(e.target.value);
     const argsArray = e.target.value.split(' ').filter(arg => arg.trim() !== '');
     setArgs(argsArray);
   };
@@ -58,7 +65,7 @@ const ReadableWindow = ({ windowNumber, selectedOption, onDropDownChange, onArgu
           <textarea
             className="flex-grow h-10 rounded-md border border-gray-700 bg-gray-800 text-white px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             placeholder="Enter arguments here"
-            value={args.join(' ')}
+            value={argsString}
             onChange={handleArgumentsChange}
           />
         </div>

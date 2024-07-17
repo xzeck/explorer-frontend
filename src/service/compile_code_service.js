@@ -1,14 +1,17 @@
-const API_URL = 'http://localhost:6000/compile';
+export const compileCode = async (base64Code, functions, compiler, args, sha256) => {
 
-export const compileCode = async (base64Code, functions, compiler, args) => {
   const payload = {
-    base_64_code: base64Code,
+    base64_code: base64Code,
     functions: functions,
-    compilers: compiler,
-    args: args === undefined || args === "" ? [""] : args
+    compiler: compiler,
+    args: args === undefined || args === "" ? [""] : args,
+    key: sha256
   };
 
   try {
+    const API_URL = process.env.REACT_APP_API_URL;
+    
+    console.log(process.env);
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: {

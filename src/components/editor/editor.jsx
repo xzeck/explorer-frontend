@@ -7,8 +7,8 @@ const CodeEditorLayout = () => {
   const [dropDownOpt_1, setDropDownOpt_1] = useState('g++');
   const [dropDownOpt_2, setDropDownOpt_2] = useState('clang++');
 
-  const handleCodeChange = (base64Code, functions) => {
-    setCodeData({ base64Code, functions });
+  const handleCodeChange = (base64Code, functions, key) => {
+    setCodeData({ base64Code, functions, key});
   };
 
   const handleDropDownChange = (option, windowNumber) => {
